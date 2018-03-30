@@ -11,6 +11,10 @@ import tensorflow as tf
 def sigmaprime(x):
     return tf.multiply(tf.sigmoid(x),tf.subtract(tf.constant(1.0),tf.sigmoid(x)))
 
+def softmax_prime(x):
+    s = tf.nn.softmax(x)
+    return s*(1.0-s)
+
 def variable_summaries(var, name):
     with tf.name_scope('summary_'+name):
         mean=tf.reduce_mean(var)
@@ -50,11 +54,11 @@ y_1 = tf.sigmoid(z_1)
 W_2 = tf.Variable(tf.zeros([HIDDENLAYER_NODE, OUTPUT_NODE]))
 b_2 = tf.Variable(tf.zeros(OUTPUT_NODE))
 z_2 = tf.matmul(y_1, W_2) + b_2
-y_2 = tf.sigmoid(z_2)
+y_2 = tf.nn.softmax(z_2)
 
 quadratic_cost = tf.subtract(y_2,y_)
 
-d_z2 = tf.multiply(quadratic_cost, sigmaprime(z_2))
+d_z2 = tf.multiply(quadratic_cost, softmax_prime(z_2))
 d_b2 = d_z2
 d_w2 = tf.matmul(tf.transpose(y_1),d_z2)
 
